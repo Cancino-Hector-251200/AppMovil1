@@ -93,11 +93,11 @@ fun PerfilScreen(
 
     LaunchedEffect(viewModel.perfil) {
         viewModel.perfil?.let { p ->
-            nombre = p.nombre.trim()
-            correo = p.correo
-            telefono = p.telefono
-            edad = p.edad
-            sexo = p.sexo.ifBlank { "Masculino" }
+            nombre = p.nombre?.trim().orEmpty()
+            correo = p.correo.orEmpty()
+            telefono = p.telefono.orEmpty()
+            edad = p.edad.orEmpty()
+            sexo = p.sexo?.takeIf { it.isNotBlank() } ?: "Masculino"
         }
     }
 
