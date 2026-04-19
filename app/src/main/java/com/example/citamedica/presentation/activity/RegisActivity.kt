@@ -1,12 +1,13 @@
-package com.example.citamedica
+package com.example.citamedica.presentation.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,13 +27,13 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,16 +53,20 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.citamedica.R
+import com.example.citamedica.presentation.components.LoadingDialog
+import com.example.citamedica.presentation.viewmodels.RegisterViewModel
 import com.example.citamedica.ui.theme.CitaMedicaTheme
 
-class MainActivity : ComponentActivity() {
+class RegisActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CitaMedicaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(modifier = Modifier.padding(innerPadding))
+                    RegistrationScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -69,19 +74,41 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun RegistrationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: RegisterViewModel = viewModel()
+) {
     val context = LocalContext.current
     var nombreCompleto by rememberSaveable { mutableStateOf("") }
     var correoElectronico by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    
-    // Estados para errores
+
     var nombreError by remember { mutableStateOf(false) }
     var correoError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(viewModel.registerSuccess) {
+        viewModel.registerSuccess?.let { response ->
+            Toast.makeText(context, response.mensaje, Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            context.startActivity(intent)
+            viewModel.onRegistroManejado()
+        }
+    }
+
+    LaunchedEffect(viewModel.errorMessage) {
+        viewModel.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.onErrorMostrado()
+        }
+    }
+
+    LoadingDialog(isVisible = viewModel.isLoading, message = "Registrando...")
 
     val customTextFieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = Color.Black,
@@ -95,13 +122,17 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         errorSupportingTextColor = Color.Red
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    val fieldModifier = Modifier
+        .fillMaxWidth()
+        .widthIn(max = 300.dp)
 
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .alpha(0.6f)
         )
 
@@ -126,30 +157,18 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Bienvenido a CitaMedica",
+                        text = "Registro de Usuario",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF333333),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    Text(
-                        text = "inicie sesión",
-                        color = Color.Gray,
-                        fontSize = 18.sp,
-                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
 
-                    val fieldModifier = Modifier
-                        .fillMaxWidth()
-                        .widthIn(max = 300.dp)
-
                     OutlinedTextField(
                         value = nombreCompleto,
-                        onValueChange = { 
+                        onValueChange = {
                             nombreCompleto = it
-                            nombreError = false 
+                            nombreError = false
                         },
                         label = { Text("Nombre completo") },
                         colors = customTextFieldColors,
@@ -163,19 +182,22 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
                     OutlinedTextField(
                         value = correoElectronico,
-                        onValueChange = { 
+                        onValueChange = {
                             correoElectronico = it
                             correoError = false
                         },
                         label = { Text("Correo electrónico") },
-                        colors = customTextFieldColors,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        colors = customTextFieldColors,
                         modifier = fieldModifier,
                         singleLine = true,
                         isError = correoError,
-                        supportingText = { 
+                        supportingText = {
                             if (correoError) {
-                                val message = if (correoElectronico.isEmpty()) "El correo es obligatorio" else "Formato de correo inválido"
+                                val message = if (correoElectronico.isBlank())
+                                    "El correo es obligatorio"
+                                else
+                                    "Formato de correo inválido"
                                 Text(message)
                             }
                         }
@@ -185,14 +207,14 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { 
+                        onValueChange = {
                             password = it
                             passwordError = false
                         },
                         label = { Text("Contraseña") },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        colors = customTextFieldColors,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        colors = customTextFieldColors,
                         trailingIcon = {
                             val image = if (passwordVisible)
                                 Icons.Filled.Visibility
@@ -213,39 +235,26 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { 
+                        onClick = {
                             nombreError = nombreCompleto.isBlank()
-                            correoError = correoElectronico.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(correoElectronico).matches()
+                            correoError = correoElectronico.isBlank() ||
+                                    !Patterns.EMAIL_ADDRESS.matcher(correoElectronico).matches()
                             passwordError = password.isBlank()
 
                             if (!nombreError && !correoError && !passwordError) {
-                                val intent = Intent(context, WerlcomeActivity::class.java)
-                                context.startActivity(intent)
+                                viewModel.registrar(
+                                    nombre = nombreCompleto,
+                                    correo = correoElectronico,
+                                    password = password
+                                )
                             }
                         },
+                        enabled = !viewModel.isLoading,
                         modifier = fieldModifier,
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Entrar", fontSize = 16.sp)
+                        Text("Registrar", fontSize = 16.sp)
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "¿No tienes una cuenta?",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                    Text(
-                        text = "Crear una cuenta",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1976D2),
-                        modifier = Modifier.clickable {
-                            val intent = Intent(context, RegisActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
                 }
             }
         }
@@ -254,8 +263,8 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegistrationScreenPreview() {
     CitaMedicaTheme {
-        LoginScreen()
+        RegistrationScreen()
     }
 }

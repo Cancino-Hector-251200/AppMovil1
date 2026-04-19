@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "177871600959",
+    "project_id": "cita-medica-app-hector",
+    "storage_bucket": "cita-medica-app-hector.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177871600959:android:950656b3907cc94204e78a",
+        "android_client_info": {
+          "package_name": "com.example.citamedica"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFNyvJkmwnr71S4JXH5Mxk9-togldEL_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

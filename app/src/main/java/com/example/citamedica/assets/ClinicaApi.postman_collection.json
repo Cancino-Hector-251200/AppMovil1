@@ -1,0 +1,481 @@
+{
+	"info": {
+		"_postman_id": "clinica-api-collection",
+		"name": "ClinicaApi",
+		"description": "Colección completa de endpoints para ClinicaApi - Sistema de gestión de clínica médica.\n\nConfigura la variable {{base_url}} con la URL de tu servidor.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						},
+						"description": "Verifica que el servidor esté corriendo."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"correo\": \"usuario@ejemplo.com\",\n  \"password\": \"tu_password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Inicia sesión con correo y contraseña. Retorna el rol del usuario (DOCTOR o PACIENTE) y sus IDs correspondientes."
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"correo\": \"nuevo@ejemplo.com\",\n  \"password\": \"password_seguro\",\n  \"rol\": \"PACIENTE\",\n  \"nombre\": \"Juan Pérez\",\n  \"especialidad\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Registra un nuevo usuario. Si el rol es DOCTOR, el campo 'especialidad' es obligatorio."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Doctores",
+			"item": [
+				{
+					"name": "Listar Todos los Doctores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/pacientes/doctores",
+							"host": ["{{base_url}}"],
+							"path": ["pacientes", "doctores"]
+						},
+						"description": "Obtiene la lista completa de doctores registrados."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Perfil de Doctor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/doctores/:id/perfil",
+							"host": ["{{base_url}}"],
+							"path": ["doctores", ":id", "perfil"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del doctor (id_doctor)"
+								}
+							]
+						},
+						"description": "Obtiene el perfil completo de un doctor por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Perfil de Doctor",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Dr. Carlos López\",\n  \"edad\": 45,\n  \"sexo\": \"Masculino\",\n  \"especialidad\": \"Cardiología\",\n  \"cedula\": \"12345678\",\n  \"telefono\": \"5551234567\",\n  \"correo\": \"carlos.lopez@clinica.com\",\n  \"biografia\": \"Especialista en cardiología con 20 años de experiencia.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/doctores/:id/perfil",
+							"host": ["{{base_url}}"],
+							"path": ["doctores", ":id", "perfil"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del doctor (id_doctor)"
+								}
+							]
+						},
+						"description": "Actualiza el perfil de un doctor. Los campos 'nombre' y 'especialidad' son obligatorios."
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas del Doctor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/doctores/:id/stats",
+							"host": ["{{base_url}}"],
+							"path": ["doctores", ":id", "stats"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del usuario (id_usuario)"
+								}
+							]
+						},
+						"description": "Obtiene las estadísticas del doctor."
+					},
+					"response": []
+				},
+				{
+					"name": "Citas del Doctor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/doctores/:id/citas",
+							"host": ["{{base_url}}"],
+							"path": ["doctores", ":id", "citas"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del doctor (id_doctor)"
+								}
+							]
+						},
+						"description": "Obtiene todas las citas asignadas a un doctor."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Horarios",
+			"item": [
+				{
+					"name": "Obtener Horarios del Doctor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/doctores/:id/horarios",
+							"host": ["{{base_url}}"],
+							"path": ["doctores", ":id", "horarios"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del doctor (id_doctor)"
+								}
+							]
+						},
+						"description": "Obtiene los horarios configurados para un doctor."
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Horario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_doctor\": 1,\n  \"dia_semana\": \"lunes\",\n  \"hora_inicio\": \"09:00\",\n  \"hora_fin\": \"17:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/horarios",
+							"host": ["{{base_url}}"],
+							"path": ["horarios"]
+						},
+						"description": "Crea un nuevo horario de atención para un doctor."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Horario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/horarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["horarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del horario (id_horario)"
+								}
+							]
+						},
+						"description": "Elimina un horario por su ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Citas",
+			"item": [
+				{
+					"name": "Agendar Cita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_paciente\": 1,\n  \"id_doctor\": 1,\n  \"nombre_paciente\": \"Juan Pérez\",\n  \"nombre_doctor\": \"Dr. Carlos López\",\n  \"motivo_cita\": \"Consulta general\",\n  \"estado\": \"pendiente\",\n  \"fecha\": \"2026-05-01\",\n  \"hora\": \"10:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/pacientes/agendar",
+							"host": ["{{base_url}}"],
+							"path": ["pacientes", "agendar"]
+						},
+						"description": "Agenda una nueva cita médica para un paciente."
+					},
+					"response": []
+				},
+				{
+					"name": "Citas del Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/pacientes/:id/citas",
+							"host": ["{{base_url}}"],
+							"path": ["pacientes", ":id", "citas"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del paciente (id_paciente)"
+								}
+							]
+						},
+						"description": "Obtiene todas las citas de un paciente."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Estado de Cita",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"confirmada\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/citas/:id/estado",
+							"host": ["{{base_url}}"],
+							"path": ["citas", ":id", "estado"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la cita (id_cita)"
+								}
+							]
+						},
+						"description": "Actualiza el estado de una cita. Valores posibles: pendiente, confirmada, rechazada, completada."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Cita",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/citas/:id",
+							"host": ["{{base_url}}"],
+							"path": ["citas", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la cita (id_cita)"
+								}
+							]
+						},
+						"description": "Elimina una cita por su ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuarios / Pacientes",
+			"item": [
+				{
+					"name": "Listar Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios"]
+						},
+						"description": "Obtiene la lista de todos los usuarios registrados."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Perfil de Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id/perfil",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", ":id", "perfil"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del usuario (id_usuario)"
+								}
+							]
+						},
+						"description": "Obtiene el perfil completo de un paciente por su ID de usuario."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Perfil de Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"edad\": \"30\",\n  \"sexo\": \"Masculino\",\n  \"telefono\": \"5559876543\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del usuario (id_usuario)"
+								}
+							]
+						},
+						"description": "Actualiza el perfil de un usuario/paciente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/usuarios/:id",
+							"host": ["{{base_url}}"],
+							"path": ["usuarios", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del usuario (id_usuario)"
+								}
+							]
+						},
+						"description": "Elimina un usuario por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas del Paciente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/pacientes/:id/stats",
+							"host": ["{{base_url}}"],
+							"path": ["pacientes", ":id", "stats"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del paciente (id_paciente)"
+								}
+							]
+						},
+						"description": "Obtiene las estadísticas de citas del paciente."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
